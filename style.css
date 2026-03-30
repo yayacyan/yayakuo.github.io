@@ -1,0 +1,642 @@
+/* ============================================================
+   きくよう みんなの応援券 対象店検索 - メインスタイル
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-primary: #1a6e3c;
+  --color-primary-light: #2a8f52;
+  --color-primary-dark: #145730;
+  --color-accent: #e07b00;
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-border: #dde1e7;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-highlight: #fff176;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --transition: 0.2s ease;
+
+  /* カテゴリカラー */
+  --cat-food: #d32f2f;
+  --cat-supermarket: #1976d2;
+  --cat-convenience: #0288d1;
+  --cat-retail: #7b1fa2;
+  --cat-beauty: #c2185b;
+  --cat-health: #388e3c;
+  --cat-auto: #f57c00;
+  --cat-construction: #5d4037;
+  --cat-service: #455a64;
+  --cat-sports: #00796b;
+  --cat-taxi: #fbc02d;
+  --cat-hotel: #303f9f;
+  --cat-other: #757575;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   ヘッダー
+   ============================================================ */
+.site-header {
+  background: var(--color-primary);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-title h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.header-sub {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+/* トグルボタン */
+.toggle-search-btn {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.83rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.toggle-search-btn:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.toggle-search-btn[aria-expanded="false"] {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ============================================================
+   検索パネル
+   ============================================================ */
+.search-panel {
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-primary);
+  overflow: hidden;
+  max-height: 600px;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.35s ease,
+              opacity 0.25s ease;
+  opacity: 1;
+}
+
+.search-panel.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.search-panel-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 検索行 */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-row-filters {
+  align-items: flex-end;
+}
+
+.search-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 9px 36px 9px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background: #fafbfc;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(26,110,60,0.12);
+  background: #fff;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  transition: color var(--transition);
+}
+
+.clear-btn:hover { color: #e74c3c; }
+
+/* フィルターグループ */
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-select {
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background: #fafbfc;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+  min-width: 160px;
+}
+
+.search-select:focus {
+  border-color: var(--color-primary);
+}
+
+/* リセットボタン */
+.reset-btn {
+  padding: 8px 18px;
+  background: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.reset-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fff5f5;
+}
+
+/* クイックピル */
+.quick-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border);
+  background: #f8f9fa;
+  font-size: 0.80rem;
+  font-family: inherit;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.pill:hover {
+  background: #e8f5e9;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pill.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pill .pill-count {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 1px 5px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.pill.active .pill-count {
+  background: rgba(255,255,255,0.3);
+  opacity: 1;
+}
+
+/* エリアピル */
+.area-pills {
+  padding-top: 4px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ============================================================
+   結果ヘッダー
+   ============================================================ */
+.result-header {
+  max-width: 1100px;
+  margin: 16px auto 8px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.result-count {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.result-count strong {
+  color: var(--color-primary);
+  font-size: 1.1rem;
+}
+
+.sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-label {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.sort-select {
+  padding: 5px 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+/* ============================================================
+   メインコンテンツ・カードグリッド
+   ============================================================ */
+.main-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+/* 店舗カード */
+.store-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.store-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-color-bar {
+  height: 4px;
+  background: var(--cat-color, var(--color-primary));
+}
+
+.card-body {
+  padding: 14px 16px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-category {
+  background: var(--cat-color, #eee);
+  color: #fff;
+}
+
+.badge-area {
+  background: #e8eaf6;
+  color: #3949ab;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.card-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.83rem;
+}
+
+.card-info-label {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 32px;
+  padding-top: 1px;
+}
+
+.card-info-value {
+  color: var(--color-text);
+  flex: 1;
+  word-break: break-word;
+}
+
+.card-tel a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.card-tel a:hover { text-decoration: underline; }
+
+.card-services {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.card-footer {
+  padding: 6px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.card-regno {
+  font-size: 0.72rem;
+  color: #bbb;
+}
+
+/* キーワードハイライト */
+mark {
+  background: var(--color-highlight);
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+/* 結果なし */
+.no-result {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-muted);
+}
+
+.no-result p:first-child {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.hidden { display: none !important; }
+
+/* ============================================================
+   ページネーション
+   ============================================================ */
+.pagination {
+  max-width: 1100px;
+  margin: 16px auto 24px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #e8f5e9;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.page-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   フッター
+   ============================================================ */
+.site-footer {
+  background: #2d3748;
+  color: #a0aec0;
+  text-align: center;
+  padding: 18px 20px;
+  font-size: 0.8rem;
+}
+
+/* ============================================================
+   先頭に戻るボタン
+   ============================================================ */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.back-to-top:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   カテゴリカラー変数マッピング
+   ============================================================ */
+.cat-food       { --cat-color: var(--cat-food); }
+.cat-supermarket{ --cat-color: var(--cat-supermarket); }
+.cat-convenience{ --cat-color: var(--cat-convenience); }
+.cat-retail     { --cat-color: var(--cat-retail); }
+.cat-beauty     { --cat-color: var(--cat-beauty); }
+.cat-health     { --cat-color: var(--cat-health); }
+.cat-auto       { --cat-color: var(--cat-auto); }
+.cat-construction{ --cat-color: var(--cat-construction); }
+.cat-service    { --cat-color: var(--cat-service); }
+.cat-sports     { --cat-color: var(--cat-sports); }
+.cat-taxi       { --cat-color: var(--cat-taxi); }
+.cat-hotel      { --cat-color: var(--cat-hotel); }
+.cat-other      { --cat-color: var(--cat-other); }
+
+/* ============================================================
+   レスポンシブ
+   ============================================================ */
+@media (max-width: 768px) {
+  .header-title h1 { font-size: 1.05rem; }
+  .header-sub { font-size: 0.73rem; }
+  .toggle-search-btn { font-size: 0.78rem; padding: 6px 12px; }
+  .search-panel-inner { padding: 14px 14px 10px; gap: 10px; }
+  .search-row-filters { flex-direction: column; align-items: flex-start; }
+  .filter-group { width: 100%; }
+  .search-select { width: 100%; min-width: unset; }
+  .card-grid { grid-template-columns: 1fr; gap: 10px; }
+  .result-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .main-content { padding: 0 12px 16px; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  .search-row { flex-direction: column; align-items: stretch; }
+  .search-label { min-width: unset; }
+  .reset-btn { width: 100%; text-align: center; }
+}
